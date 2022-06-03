@@ -3,44 +3,45 @@ import torch.nn.functional as F
 
 
 class myAutoEncoder(nn.Module):
-    def __init__(self):
-        super(myAutoEncoder, self).__init__()
+    def __init__(self, classes=2):
+        super(myAutoEncoder, self).__init__()    
         self.encoder = nn.Sequential(
             
-            nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1),  
-            nn.Tanh(True),
-            nn.MaxPool2d(2, stride=1),  
-            
-            nn.Conv2d(16, 8, kernel_size=3, stride=1, padding=1), 
-            nn.Tanh(True),
-            nn.MaxPool2d(2, stride=1),
-            
-            nn.Conv2d(8, 8, kernel_size=3, stride=1, padding=1), 
-            nn.Tanh(True),
-            nn.MaxPool2d(2, stride=1)
+            #input for the encoder : 3 28 28
 
-            #output of encoder :  4 4 8
+            nn.Conv2d(3, 16, 3, stride=1, padding=1),  
+            nn.Tanh(True),
+            nn.MaxPool2d(2),  
+            
+            nn.Conv2d(16, 4, 3, stride=1, padding=1), 
+            nn.Tanh(True),
+            nn.MaxPool2d(2)
+
+            #output for encoder :  4 7 7
         )
 
         self.decoder = nn.Sequential(
             
-            #Input of decoder : 4 4 8
+            #Input of decoder : 4 7 7 
 
-            # Conv transpose 2D  2*2  8*8*8
-            nn.ConvTranspose2d(8, 8, 2, stride=2, padding=0),  # b, 16, 5, 5
+            nn.ConvTranspose2d(4, 16, 2, stride=2),
             nn.Tanh(True),
                 
-            # Conv transpose 2D 2*2 16*16*8
-            nn.ConvTranspose2d(8, 8, 2, stride=2, padding=0),  # b, 8, 15, 15
-            nn.Tanh(True),
-
-            # Conv transpose 2D 2*2 28*28*16
-            nn.ConvTranspose2d(8, 1, 2, stride=2, padding=1),  # b, 1, 28, 28
-            nn.Tanh(),
+            nn.ConvTranspose2d(16, 3, 2, stride=2),
             nn.Sigmoid()
+
+            #output of decoder : 3 28 28
+        )
+
+        self.classifier = nn.Sequential(
+            
+            #Input of classifier : 3 28 28 
+            nn.Linear(3*28*28, self.classes)
         )
 
     def forward(self, x):
-        encoded = self.encoder(x)
-        decoded = self.decoder(encoded)
+        x = self.encoder(x)
+        x = self.decoder(x)
+        x = x.view(x.size(0), -1)
+        x = self.classifier(x)
         return x
