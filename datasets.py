@@ -5,9 +5,9 @@ import torch
 
 class CustomDataset(Dataset):
 	def __init__(self):
-		self.dataset_path = "" 										              # Give path for the dataset
+		self.dataset_path = "" 						# dataset path
 		directory_list = glob.glob(self.dataset_path + "*") 		# This list should contain paths for both freeze and nofreeze folders(containing images)
-		self.data = []												                  # List containing list of tensor_img and class_name [[img1, class_name1],[img2, class_name2]....]
+		self.data = []						        # List containing list of tensor_img and class_name [[img1, class_name1],[img2, class_name2]....]
 		for single_class in directory_list:	
 			class_name = single_class.split("/")[-1]
 			for tensor_img in glob.glob(single_class + "/*.png"):	# Change the format of .png based on the image extensions 
