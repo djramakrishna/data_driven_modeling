@@ -23,4 +23,13 @@ class CustomDataset(Dataset):
 		class_id = self.class_map[class_name]
 		#img_tensor = torch.from_numpy(img)		### Exclude this if they are already a torch tensor
 		class_id = torch.tensor([class_id])
-		return img_tensor, class_id
+		return tensor_image, class_id
+
+
+def getDataLoader(mode, batch_size, dataset, num_workers=4):
+    
+    dataloader = DataLoader(dataset, 
+                            batch_size=batch_size, 
+                            shuffle=(mode=='train'),
+                            num_workers=num_workers)
+    return dataloader
