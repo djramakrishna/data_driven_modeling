@@ -32,6 +32,9 @@ class CustomDataset(Dataset):
 	
 		img_x_path, img_y_path, img_z_path, class_name = self.data[idx][0][0], self.data[idx][1][0], self.data[idx][2][0], self.data[idx][3]
 
+		# img_x = Image.open(img_x_path)
+		# img_y = Image.open(img_y_path)
+		# img_z = Image.open(img_z_path)
 		img_x = Image.open(img_x_path)
 		img_y = Image.open(img_y_path)
 		img_z = Image.open(img_z_path)
@@ -40,6 +43,10 @@ class CustomDataset(Dataset):
 		tensor_y = transforms.PILToTensor()(img_y)
 		tensor_z = transforms.PILToTensor()(img_z)
 
+		tensor_x = tensor_x[:3]
+		tensor_y = tensor_y[:3]
+		tensor_z = tensor_z[:3]
+		
 		# tensor_x = read_image(img_x_path)
 		# tensor_y = read_image(img_y_path)
 		# tensor_z = read_image(img_z_path)
@@ -47,4 +54,4 @@ class CustomDataset(Dataset):
 		class_id = self.class_map[class_name]
 		class_id = torch.tensor([class_id])
 		#print("GET ITEM !!!!")
-		return tensor_x, tensor_y, tensor_z, class_id
+		return (tensor_x, tensor_y, tensor_z), class_id
