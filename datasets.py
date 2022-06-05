@@ -6,13 +6,14 @@ from torchvision.io import read_image
 import torch
 import os
 from PIL import Image
+from torchvision.io import read_image
 
 class CustomDataset(Dataset):
 	def __init__(self):
 		self.dataset_path = os.getcwd() + "/dataset"					                   	
 		directory_list = glob.glob(self.dataset_path + "*") 		
 		self.data = []
-		self.transform = transforms.Compose([transforms.PILToTensor])
+		#self.transform = transforms.Compose([transforms.PILToTensor])
 		for each_class in directory_list:
 			class_name = each_class.split("/")[-1]
 			persons_list = glob.glob(each_class + "/*")
@@ -30,13 +31,17 @@ class CustomDataset(Dataset):
 	def __getitem__(self, idx):
 		img_x_path, img_y_path, img_z_path, class_name = self.data[idx][0][0], self.data[idx][1][0], self.data[idx][2][0], self.data[idx][3]
 		
-		img_x = Image.open(img_x_path)
-		img_y = Image.open(img_y_path)
-		img_z = Image.open(img_z_path)
+		# img_x = Image.open(img_x_path)
+		# img_y = Image.open(img_y_path)
+		# img_z = Image.open(img_z_path)
 
-		tensor_x = self.transform(img_x)
-		tensor_y = self.transform(img_y)
-		tensor_z = self.transform(img_z)
+		# tensor_x = self.transform(img_x)
+		# tensor_y = self.transform(img_y)
+		# tensor_z = self.transform(img_z)
+
+		tensor_x = read_image(img_x_path)
+		tensor_y = read_image(img_y_path)
+		tensor_z = read_image(img_z_path)
 
 		class_id = self.class_map[class_name]
 		class_id = torch.tensor([class_id])
