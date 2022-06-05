@@ -1,3 +1,4 @@
+from cProfile import label
 import enum
 from dataset import CustomDataset
 import matplotlib.pyplot as plt
@@ -33,25 +34,27 @@ from models import myAutoEncoder
 from torch.utils.data import DataLoader
 
 mydataset = CustomDataset()
-train_loader = DataLoader(dataset=mydataset, batch_size=1)
+train_loader = DataLoader(dataset=mydataset, batch_size=2)
 
-
-network = myAutoEncoder()
-print("Network loaded !")
+mymodel = myAutoEncoder()
+print(mymodel)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(network.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.SGD(mymodel.parameters(), lr=0.001, momentum=0.9)
 
 for epoch in range(10):
     running_loss = 0.0        
     #for x, y, z, labels in train_loader:
     for i, data in enumerate(train_loader):
-        print("STARTING TRAINING")
         optimizer.zero_grad()
-        x,y,z,labels = data
-        print("LABELS",labels)
-        outputs = myAutoEncoder(x, y, z)
-        loss = criterion(outputs, labels)
+        (x,y,z),labels = data
+        labels = labels.squeeze()
+        labels = labels.long()
+        preds = mymodel(x.float(), y.float(), z.float())
+        #preds = torch.argmax(preds, axis=1)
+        print("PREDS--------", preds)
+        
+        loss = criterion(preds, labels)
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
