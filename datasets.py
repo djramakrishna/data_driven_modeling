@@ -1,20 +1,20 @@
 from torch.utils.data import Dataset, DataLoader
+from torchvision.io import read_image
 from torchvision import transforms
 import glob
-import cv2
-from torchvision.io import read_image
 import torch
 import os
 from PIL import Image
-from torchvision.io import read_image
 
 class CustomDataset(Dataset):
 	def __init__(self):
-		self.dataset_path = os.getcwd() + "/dataset"					                   	
-		directory_list = glob.glob(self.dataset_path + "*") 		
+		self.dataset_path = os.getcwd() + "/data/"				                   	
+		directory_list = glob.glob(self.dataset_path + "*") 	
+		#print(directory_list)	
 		self.data = []
-		#self.transform = transforms.Compose([transforms.PILToTensor])
+		self.transform = transforms.Compose([transforms.PILToTensor])
 		for each_class in directory_list:
+			#print("EACH CLASS", each_class)
 			class_name = each_class.split("/")[-1]
 			persons_list = glob.glob(each_class + "/*")
 			for each_person in persons_list:
@@ -29,21 +29,22 @@ class CustomDataset(Dataset):
 		return len(self.data)    
 	
 	def __getitem__(self, idx):
+	
 		img_x_path, img_y_path, img_z_path, class_name = self.data[idx][0][0], self.data[idx][1][0], self.data[idx][2][0], self.data[idx][3]
-		
-		# img_x = Image.open(img_x_path)
-		# img_y = Image.open(img_y_path)
-		# img_z = Image.open(img_z_path)
 
-		# tensor_x = self.transform(img_x)
-		# tensor_y = self.transform(img_y)
-		# tensor_z = self.transform(img_z)
+		img_x = Image.open(img_x_path)
+		img_y = Image.open(img_y_path)
+		img_z = Image.open(img_z_path)
 
-		tensor_x = read_image(img_x_path)
-		tensor_y = read_image(img_y_path)
-		tensor_z = read_image(img_z_path)
+		tensor_x = transforms.PILToTensor()(img_x)
+		tensor_y = transforms.PILToTensor()(img_y)
+		tensor_z = transforms.PILToTensor()(img_z)
+
+		# tensor_x = read_image(img_x_path)
+		# tensor_y = read_image(img_y_path)
+		# tensor_z = read_image(img_z_path)
 
 		class_id = self.class_map[class_name]
 		class_id = torch.tensor([class_id])
-
+		#print("GET ITEM !!!!")
 		return tensor_x, tensor_y, tensor_z, class_id
