@@ -51,9 +51,7 @@ for epoch in range(10):
         labels = labels.squeeze()
         labels = labels.long()
         preds = mymodel(x.float(), y.float(), z.float())
-        #preds = torch.argmax(preds, axis=1)
-        print("PREDS--------", preds)
-        
+        #preds = torch.argmax(preds, axis=1) 
         loss = criterion(preds, labels)
         loss.backward()
         optimizer.step()
